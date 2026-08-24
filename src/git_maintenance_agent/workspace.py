@@ -5,6 +5,8 @@ from __future__ import annotations
 import os
 import subprocess
 import sys
+import tempfile
+from collections.abc import Mapping
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -14,7 +16,12 @@ from .safety import is_sensitive_relative_path, resolve_safe_path, truncate_outp
 
 
 def _run_command(
-    command: list[str], *, cwd: Path, timeout_seconds: int = 120, input_text: str | None = None
+    command: list[str],
+    *,
+    cwd: Path,
+    timeout_seconds: int = 120,
+    input_text: str | None = None,
+    environment: Mapping[str, str] | None = None,
 ) -> CommandResult:
     """Run an allowlisted command without shell interpolation."""
 
@@ -28,6 +35,7 @@ def _run_command(
             timeout=timeout_seconds,
             check=False,
             shell=False,
+            env=environment,
         )
     except subprocess.TimeoutExpired as error:
         stdout = error.stdout.decode() if isinstance(error.stdout, bytes) else error.stdout or ""
@@ -157,4 +165,14 @@ class Workspace:
         command = [sys.executable, "-m", "pytest", "-q"]
         if nodeid:
             command.append(nodeid)
-        return _run_command(command, cwd=self.root, timeout_seconds=timeout_seconds)
+        environment = os.environ.copy()
+        environment["PYTHONDONTWRITEBYTECODE"] = "1"
+        with tempfile.TemporaryDirectory(prefix="gma-pycache-") as pycache_directory:
+            # A new cache prevents stale same-second bytecode after an approved patch.
+            environment["PYTHONPYCACHEPREFIX"] = pycache_directory
+            return _run_command(
+                command,
+                cwd=self.root,
+                timeout_seconds=timeout_seconds,
+                environment=environment,
+            )
