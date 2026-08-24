@@ -1,0 +1,4 @@
+id: dirty-worktree-review
+fixture: dirty-worktree-review
+task: Review the current Python diff and identify regression risk.
+expected_skills: [python-code-review, git-investigation]

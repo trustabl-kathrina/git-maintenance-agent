@@ -1,0 +1,36 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - run: uv sync --all-groups
+      - run: uv run ruff check .
+      - run: uv run mypy src
+      - run: uv run python -m pytest
+      - run: uv run gma skills validate
+      - run: uv run gma eval run
+
+  build-and-pip-install:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          python-version: "3.13"
+      - run: uv build
+      - run: python -m venv /tmp/gma-venv
+      - run: /tmp/gma-venv/bin/python -m pip install dist/*.whl
+      - run: /tmp/gma-venv/bin/gma --help

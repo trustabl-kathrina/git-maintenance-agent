@@ -1,0 +1,14 @@
+name: Bug report
+description: Report a reproducible problem in Git Maintenance Agent.
+body:
+  - type: textarea
+    attributes:
+      label: What happened?
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Reproduction
+      description: Do not include API keys, private source code, or secrets.
+    validations:
+      required: true

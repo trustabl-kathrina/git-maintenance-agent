@@ -1,0 +1,4 @@
+id: missing-test-dependency
+fixture: missing-test-dependency
+task: Explain why test imports fail after a dependency configuration change.
+expected_skills: [dependency-analysis, pytest-debugging]

@@ -1,0 +1,4 @@
+id: stale-version-constraint
+fixture: stale-version-constraint
+task: Investigate a stale package constraint blocking the test environment.
+expected_skills: [dependency-analysis, git-investigation]

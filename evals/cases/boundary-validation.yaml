@@ -1,0 +1,4 @@
+id: boundary-validation
+fixture: boundary-validation
+task: Investigate an off-by-one validation failure in the Python test suite.
+expected_skills: [pytest-debugging, python-code-review]
